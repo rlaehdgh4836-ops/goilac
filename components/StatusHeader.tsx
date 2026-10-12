@@ -14,7 +14,12 @@ type StatusHeaderProps = {
 /** 실패·완료 화면 상단의 아이콘 + 제목 영역 */
 export default function StatusHeader({ icon, eyebrow, title, description }: StatusHeaderProps) {
   return (
-    <FlexBox flexDirection="column" alignItems="center" gap="16px" sx={{ padding: '32px 0 8px', textAlign: 'center' }}>
+    <FlexBox
+      flexDirection="column"
+      alignItems="center"
+      gap="16px"
+      sx={{ padding: '8px 0 0', textAlign: 'center' }}
+    >
       {icon}
       <FlexBox flexDirection="column" alignItems="center" gap="6px">
         {eyebrow && (
@@ -26,7 +31,11 @@ export default function StatusHeader({ icon, eyebrow, title, description }: Stat
           {title}
         </Typography>
         {description && (
-          <Typography variant="body1-reading" color="semantic.foreground.neutral.secondary" sx={{ wordBreak: 'keep-all' }}>
+          <Typography
+            variant="body1-reading"
+            color="semantic.foreground.neutral.secondary"
+            sx={{ wordBreak: 'keep-all' }}
+          >
             {description}
           </Typography>
         )}

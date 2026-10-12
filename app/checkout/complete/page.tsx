@@ -1,12 +1,13 @@
 'use client';
 
-import { ActionArea, ActionAreaButton, FlexBox, Typography } from '@montage-ui/core';
+import { Button, FlexBox, Typography } from '@montage-ui/core';
 import { IconCircleCheckFill } from '@montage-ui/icon';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 import InfoRows from '@/components/InfoRows';
 import PageLayout from '@/components/PageLayout';
+import Panel from '@/components/Panel';
 import StatusHeader from '@/components/StatusHeader';
 import { useCheckout } from '@/lib/checkout-store';
 import { ORDER, formatWon, getPaymentMethod } from '@/lib/mock-data';
@@ -31,25 +32,24 @@ export default function CompletePage() {
     router.replace(NEXT_ROUTE[status]);
   }, [hydrated, status, router]);
 
-  if (!hydrated || status !== 'success' || !receipt) return <PageLayout>{null}</PageLayout>;
+  if (!hydrated || status !== 'success' || !receipt) {
+    return (
+      <PageLayout title="주문 완료" step="complete" width="narrow">
+        {null}
+      </PageLayout>
+    );
+  }
 
   const method = getPaymentMethod(receipt.methodId);
 
   return (
-    <PageLayout
-      bottom={
-        <ActionArea background>
-          {/* 상태 초기화는 결제 화면 진입 시 처리된다 */}
-          <ActionAreaButton onClick={() => router.replace('/checkout')}>확인</ActionAreaButton>
-        </ActionArea>
-      }
-    >
-      <FlexBox flexDirection="column" gap="24px">
+    <PageLayout title="주문 완료" step="complete" width="narrow">
+      <Panel sx={{ padding: '48px 48px 40px', gap: 28 }}>
         <StatusHeader
           icon={
             <IconCircleCheckFill
               aria-hidden
-              sx={(theme) => ({ fontSize: 56, color: theme.semantic.foreground.positive.primary })}
+              sx={(theme) => ({ fontSize: 64, color: theme.semantic.foreground.positive.primary })}
             />
           }
           title="결제가 완료되었어요"
@@ -69,7 +69,12 @@ export default function CompletePage() {
               {
                 label: '결제 금액',
                 value: (
-                  <Typography as="span" variant="body1" weight="bold" color="semantic.foreground.brand.primary">
+                  <Typography
+                    as="span"
+                    variant="body1"
+                    weight="bold"
+                    color="semantic.foreground.brand.primary"
+                  >
                     {formatWon(ORDER.totalAmount)}
                   </Typography>
                 ),
@@ -79,7 +84,12 @@ export default function CompletePage() {
             ]}
           />
         </FlexBox>
-      </FlexBox>
+
+        {/* 상태 초기화는 결제 화면 진입 시 처리된다 */}
+        <Button size="large" fullWidth onClick={() => router.replace('/checkout')}>
+          확인
+        </Button>
+      </Panel>
     </PageLayout>
   );
 }

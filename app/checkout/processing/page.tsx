@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 import PageLayout from '@/components/PageLayout';
+import Panel from '@/components/Panel';
 import { useCheckout } from '@/lib/checkout-store';
 import { ORDER, formatWon, getPaymentMethod } from '@/lib/mock-data';
 import { PROCESSING_DELAY_MS, resolvePayment } from '@/lib/mock-pay';
@@ -43,34 +44,36 @@ export default function ProcessingPage() {
   }, [status]);
 
   return (
-    <PageLayout>
-      <FlexBox
-        flexDirection="column"
-        alignItems="center"
-        justifyContent="center"
-        flex={1}
-        gap="24px"
-        role="status"
-        aria-live="polite"
-        sx={{ textAlign: 'center' }}
-      >
-        <Loading variant="circular" size="48px" />
-        <FlexBox flexDirection="column" gap="8px" alignItems="center">
-          <Typography variant="title3" weight="bold">
-            결제를 처리하고 있어요
-          </Typography>
-          <Typography variant="body1-reading" color="semantic.foreground.neutral.secondary">
-            잠시만 기다려 주세요.
-            <br />
-            창을 닫거나 새로고침하면 결제가 중단될 수 있어요.
-          </Typography>
+    <PageLayout title="결제하기" width="narrow">
+      <Panel sx={{ minHeight: 440, justifyContent: 'center' }}>
+        <FlexBox
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          flex={1}
+          gap="24px"
+          role="status"
+          aria-live="polite"
+          sx={{ textAlign: 'center' }}
+        >
+          <Loading variant="circular" size="48px" />
+          <FlexBox flexDirection="column" gap="8px" alignItems="center">
+            <Typography variant="title3" weight="bold">
+              결제를 처리하고 있어요
+            </Typography>
+            <Typography variant="body1-reading" color="semantic.foreground.neutral.secondary">
+              잠시만 기다려 주세요.
+              <br />
+              창을 닫거나 새로고침하면 결제가 중단될 수 있어요.
+            </Typography>
+          </FlexBox>
+          {method && (
+            <Typography variant="label1" color="semantic.foreground.neutral.tertiary">
+              {method.name} · {formatWon(ORDER.totalAmount)}
+            </Typography>
+          )}
         </FlexBox>
-        {method && (
-          <Typography variant="label1" color="semantic.foreground.neutral.tertiary">
-            {method.name} · {formatWon(ORDER.totalAmount)}
-          </Typography>
-        )}
-      </FlexBox>
+      </Panel>
     </PageLayout>
   );
 }

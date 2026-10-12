@@ -1,12 +1,13 @@
 'use client';
 
-import { ActionArea, ActionAreaButton, FlexBox, SectionMessage, Typography } from '@montage-ui/core';
+import { Button, FlexBox, SectionMessage, Typography } from '@montage-ui/core';
 import { IconCircleExclamationFill } from '@montage-ui/icon';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 import InfoRows from '@/components/InfoRows';
 import PageLayout from '@/components/PageLayout';
+import Panel from '@/components/Panel';
 import StatusHeader from '@/components/StatusHeader';
 import { useCheckout } from '@/lib/checkout-store';
 import { FAILURE_REASONS } from '@/lib/failure-reasons';
@@ -29,7 +30,13 @@ export default function FailedPage() {
     router.replace(NEXT_ROUTE[status]);
   }, [hydrated, status, router]);
 
-  if (!hydrated || status !== 'failed' || !lastFailure) return <PageLayout>{null}</PageLayout>;
+  if (!hydrated || status !== 'failed' || !lastFailure) {
+    return (
+      <PageLayout title="결제 실패" width="narrow">
+        {null}
+      </PageLayout>
+    );
+  }
 
   const reason = FAILURE_REASONS[lastFailure.code];
   const failedMethod = getPaymentMethod(lastFailure.methodId);
@@ -48,26 +55,13 @@ export default function FailedPage() {
   const secondary: RecoveryAction = primary === 'retry' ? 'change_method' : 'retry';
 
   return (
-    <PageLayout
-      title="결제 실패"
-      onBack={() => router.replace('/checkout')}
-      bottom={
-        <ActionArea background>
-          <ActionAreaButton variant="main" onClick={actions[primary].onClick}>
-            {actions[primary].label}
-          </ActionAreaButton>
-          <ActionAreaButton variant="alternative" onClick={actions[secondary].onClick}>
-            {actions[secondary].label}
-          </ActionAreaButton>
-        </ActionArea>
-      }
-    >
-      <FlexBox flexDirection="column" gap="24px">
+    <PageLayout title="결제 실패" width="narrow" onBack={() => router.replace('/checkout')}>
+      <Panel sx={{ padding: '48px 48px 40px', gap: 28 }}>
         <StatusHeader
           icon={
             <IconCircleExclamationFill
               aria-hidden
-              sx={(theme) => ({ fontSize: 56, color: theme.semantic.foreground.negative.primary })}
+              sx={(theme) => ({ fontSize: 64, color: theme.semantic.foreground.negative.primary })}
             />
           }
           eyebrow="결제에 실패했어요"
@@ -75,15 +69,19 @@ export default function FailedPage() {
           description={reason.description}
         />
 
-        {reason.notCharged && (
-          <SectionMessage variant="positive" description="결제 금액은 청구되지 않았어요. 안심하고 다시 시도해 주세요.">
-            실제로 결제되지 않았어요
+        <FlexBox flexDirection="column" gap="12px">
+          {reason.notCharged && (
+            <SectionMessage
+              variant="positive"
+              description="결제 금액은 청구되지 않았어요. 안심하고 다시 시도해 주세요."
+            >
+              실제로 결제되지 않았어요
+            </SectionMessage>
+          )}
+          <SectionMessage variant="info" description={reason.guide}>
+            이렇게 해결할 수 있어요
           </SectionMessage>
-        )}
-
-        <SectionMessage variant="info" description={reason.guide}>
-          이렇게 해결할 수 있어요
-        </SectionMessage>
+        </FlexBox>
 
         <FlexBox flexDirection="column" gap="12px">
           <Typography variant="headline2" weight="bold">
@@ -101,7 +99,22 @@ export default function FailedPage() {
             주문 정보는 그대로 유지돼요. 결제수단만 다시 선택하면 바로 결제할 수 있어요.
           </Typography>
         </FlexBox>
-      </FlexBox>
+
+        <FlexBox gap="12px" sx={{ paddingTop: 4 }}>
+          <Button
+            size="large"
+            variant="outlined"
+            color="assistive"
+            onClick={actions[secondary].onClick}
+            sx={{ flex: 1 }}
+          >
+            {actions[secondary].label}
+          </Button>
+          <Button size="large" onClick={actions[primary].onClick} sx={{ flex: 1 }}>
+            {actions[primary].label}
+          </Button>
+        </FlexBox>
+      </Panel>
     </PageLayout>
   );
 }

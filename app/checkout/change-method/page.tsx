@@ -1,15 +1,16 @@
 'use client';
 
-import { ActionArea, ActionAreaButton, FlexBox, SectionMessage, Typography } from '@montage-ui/core';
+import { SectionMessage, Typography } from '@montage-ui/core';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
-import OrderSummary from '@/components/OrderSummary';
+import CheckoutLayout from '@/components/CheckoutLayout';
 import PageLayout from '@/components/PageLayout';
+import Panel from '@/components/Panel';
 import PaymentMethodList from '@/components/PaymentMethodList';
 import { useCheckout } from '@/lib/checkout-store';
 import { FAILURE_REASONS } from '@/lib/failure-reasons';
-import { ORDER, PAYMENT_METHODS, formatWon, getPaymentMethod } from '@/lib/mock-data';
+import { PAYMENT_METHODS, getPaymentMethod } from '@/lib/mock-data';
 
 const NEXT_ROUTE = {
   idle: '/checkout',
@@ -39,7 +40,9 @@ export default function ChangeMethodPage() {
     router.replace(NEXT_ROUTE[status]);
   }, [hydrated, status, router]);
 
-  if (!hydrated || status !== 'failed' || !lastFailure) return <PageLayout>{null}</PageLayout>;
+  if (!hydrated || status !== 'failed' || !lastFailure) {
+    return <PageLayout title="다른 결제수단 선택">{null}</PageLayout>;
+  }
 
   const reason = FAILURE_REASONS[lastFailure.code];
   const failedMethod = getPaymentMethod(failedMethodId);
@@ -53,18 +56,13 @@ export default function ChangeMethodPage() {
   };
 
   return (
-    <PageLayout
-      title="다른 결제수단 선택"
-      onBack={() => router.back()}
-      bottom={
-        <ActionArea background caption={selected ? `${selected.name}(으)로 결제해요` : undefined}>
-          <ActionAreaButton onClick={handlePay} loading={submitting} disabled={!selected}>
-            {formatWon(ORDER.totalAmount)} 결제하기
-          </ActionAreaButton>
-        </ActionArea>
-      }
-    >
-      <FlexBox flexDirection="column" gap="24px">
+    <PageLayout title="다른 결제수단 선택" onBack={() => router.back()}>
+      <CheckoutLayout
+        onPay={handlePay}
+        payDisabled={!selected}
+        paying={submitting}
+        caption={selected ? `${selected.name}(으)로 결제해요` : undefined}
+      >
         <SectionMessage
           variant="cautionary"
           description={`${failedMethod?.name ?? '이전 결제수단'} 결제가 '${reason.label}'(으)로 실패했어요. 주문 정보는 그대로예요.`}
@@ -72,10 +70,7 @@ export default function ChangeMethodPage() {
           결제수단만 바꾸면 바로 결제돼요
         </SectionMessage>
 
-        <FlexBox flexDirection="column" gap="12px">
-          <Typography variant="headline1" weight="bold">
-            결제수단
-          </Typography>
+        <Panel title="결제수단">
           <PaymentMethodList
             methods={methods}
             value={value}
@@ -84,19 +79,12 @@ export default function ChangeMethodPage() {
             disabled={submitting}
           />
           {pickedFailed && reason.persistsOnSameMethod && (
-            <Typography variant="caption1" color="semantic.foreground.negative.primary">
+            <Typography variant="label2" color="semantic.foreground.negative.primary">
               방금 {reason.label}(으)로 실패한 결제수단이에요. 문제를 해결하지 않았다면 다시 실패할 수 있어요.
             </Typography>
           )}
-        </FlexBox>
-
-        <FlexBox flexDirection="column" gap="12px">
-          <Typography variant="headline1" weight="bold">
-            주문 상품
-          </Typography>
-          <OrderSummary />
-        </FlexBox>
-      </FlexBox>
+        </Panel>
+      </CheckoutLayout>
     </PageLayout>
   );
 }

@@ -6,7 +6,13 @@ body {
 
 body {
   font-family:
-    'Pretendard JP Variable', 'Pretendard JP', 'Pretendard Variable', Pretendard,
-    -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    'Pretendard JP Variable',
+    'Pretendard JP',
+    'Pretendard Variable',
+    Pretendard,
+    -apple-system,
+    BlinkMacSystemFont,
+    system-ui,
+    sans-serif;
   -webkit-font-smoothing: antialiased;
 }

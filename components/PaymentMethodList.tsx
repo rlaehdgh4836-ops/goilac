@@ -26,15 +26,12 @@ export default function PaymentMethodList({
   disabled,
 }: PaymentMethodListProps) {
   // 그룹 순서는 전달받은 methods 순서를 따른다.
-  const groups = methods.reduce<{ type: PaymentMethodType; items: PaymentMethod[] }[]>(
-    (acc, method) => {
-      const group = acc.find((g) => g.type === method.type);
-      if (group) group.items.push(method);
-      else acc.push({ type: method.type, items: [method] });
-      return acc;
-    },
-    [],
-  );
+  const groups = methods.reduce<{ type: PaymentMethodType; items: PaymentMethod[] }[]>((acc, method) => {
+    const group = acc.find((g) => g.type === method.type);
+    if (group) group.items.push(method);
+    else acc.push({ type: method.type, items: [method] });
+    return acc;
+  }, []);
 
   return (
     <RadioGroup
@@ -49,14 +46,16 @@ export default function PaymentMethodList({
           <Typography variant="label1" weight="bold" color="semantic.foreground.neutral.secondary">
             {GROUP_LABEL[group.type]}
           </Typography>
-          {group.items.map((method) => (
-            <MethodRow
-              key={method.id}
-              method={method}
-              selected={method.id === value}
-              failed={method.id === failedMethodId}
-            />
-          ))}
+          <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 12 }}>
+            {group.items.map((method) => (
+              <MethodRow
+                key={method.id}
+                method={method}
+                selected={method.id === value}
+                failed={method.id === failedMethodId}
+              />
+            ))}
+          </Box>
         </FlexBox>
       ))}
     </RadioGroup>
@@ -79,7 +78,7 @@ function MethodRow({
         display: 'flex',
         alignItems: 'center',
         gap: 12,
-        padding: '14px 16px',
+        padding: '18px 20px',
         borderRadius: 12,
         cursor: 'pointer',
         border: `1.5px solid ${
@@ -103,7 +102,7 @@ function MethodRow({
             </ContentBadge>
           )}
         </FlexBox>
-        <Typography variant="label2" color="semantic.foreground.neutral.tertiary" noWrap>
+        <Typography variant="label2" color="semantic.foreground.neutral.tertiary" sx={{ wordBreak: 'keep-all' }}>
           {method.detail}
         </Typography>
       </FlexBox>

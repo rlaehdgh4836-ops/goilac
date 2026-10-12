@@ -20,7 +20,12 @@ export default function InfoRows({ rows }: { rows: { label: string; value: React
     >
       {rows.map((row) => (
         <FlexBox key={row.label} justifyContent="space-between" alignItems="baseline" gap="16px">
-          <Typography as="dt" variant="label1" color="semantic.foreground.neutral.secondary" sx={{ flexShrink: 0 }}>
+          <Typography
+            as="dt"
+            variant="label1"
+            color="semantic.foreground.neutral.secondary"
+            sx={{ flexShrink: 0 }}
+          >
             {row.label}
           </Typography>
           <Typography as="dd" variant="label1" weight="medium" align="right" sx={{ margin: 0 }}>
